@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Word Guess!</title>
+</head>
+<body>
+    
+
+    <header><h1>Welcome to Word Guess!</h1></header>
+
+<h3>Press any key to start</h3>
+
+<p>key pressed: <span id="kp"></span></p>
+
+<p>Wins: </p>
+
+<p>Unknown word: <span id='blanks'></span></p>
+
+<p>Letters guessed: <span id='dispLetters'></span></p>
+
+<p>Guesses left: </p>
+
+<script>
+    /* variables */
+    var wins = 0;
+    var secretWord;
+    var words = ['ghost','murder','witch','spiderweb','vampire','werewolf','midnight','haunting', 'zombie'];
+    var lettersGuessed = [];
+    var guess = '';
+    var numGuesses = 12;
+    var wordDisp = [];
+
+    /* generating a random num to pick our word for this round */
+    var w = Math.floor(Math.random() * words.length);
+    //console.log('random index is: '+w);
+    console.log('secret word is: '+words[w]);
+    console.log('length of secret word is: '+words[w].length)
+    secretWord = words[w];
+    //console.log(secretWord);
+
+    // hopefully this will create a unique array ofr wordDisp' depending
+    // on the length of the secret word
+
+    for (var i=0; i < secretWord.length; i++){
+        //console.log(i);r wordDisp
+        wordDisp.push('__');
+    }
+    console.log(wordDisp);
+    document.getElementById('blanks').innerHTML = wordDisp;
+
+    // now we begin interacting with a user. below is the code
+    // that will run at the start of a game when the user presses
+    // a key
+
+    //saves key pressed to a variable called 'guess'
+    document.onkeypress = function(event){
+        guess = event.key;
+        document.getElementById('kp').innerHTML = guess;
+        console.log(guess);
+
+        // adds element to list of letters guessed (if it has not been guessed already)
+        if (!lettersGuessed.includes(guess)){
+            //console.log(lettersGuessed);
+            //console.log(guess + ' not already in array. adding now');
+            lettersGuessed.push(guess);
+            console.log(lettersGuessed);
+            document.getElementById('dispLetters').innerHTML = lettersGuessed;
+
+            // if the user has not guessed the letter yet then we need to check 
+            // if its in our secret word
+            if (secretWord.includes(guess)){
+                console.log(guess + ' is in the word '+ secretWord);
+                
+                
+                for (var j=0; j<secretWord.length; j++){
+                    //console.log(secretWord.indexOf(guess,j));
+                    if ((secretWord.indexOf(guess,j)) != -1){
+                        wordDisp[secretWord.indexOf(guess,j)] = guess;
+                        //console.log(wordDisp);
+                        document.getElementById('blanks').innerHTML = wordDisp;
+                    }
+                }
+            } else {
+                console.log('try again :(');
+                numGuesses--;
+            console.log(numGuesses);
+            }
+        } else {
+            console.log(lettersGuessed);
+            console.log(guess + ' already in array. guess a new letter');
+        }
+
+    }
+    console.log(guess);
+</script>
+
+</body>
+</html>
