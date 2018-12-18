@@ -15,7 +15,7 @@
 
 <p>key pressed: <span id="kp"></span></p>
 
-<p>Wins: </p>
+<p>Wins: <span id="w"></span></p>
 
 <p>Unknown word: <span id='blanks'></span></p>
 
@@ -28,18 +28,30 @@
     var wins = 0;
     var secretWord;
     var words = ['ghost','murder','witch','spiderweb','vampire','werewolf','midnight','haunting', 'zombie'];
-    var lettersGuessed = [];
     var guess = '';
-    var numGuesses = 12;
     var wordDisp = [];
+    var lettersGuessed = [];
+    var numGuesses = 12;
 
-    /* generating a random num to pick our word for this round */
-    var w = Math.floor(Math.random() * words.length);
-    //console.log('random index is: '+w);
-    console.log('secret word is: '+words[w]);
-    console.log('length of secret word is: '+words[w].length)
-    secretWord = words[w];
-    //console.log(secretWord);
+    // here is a function that will reset the game. it resets everything except for 
+    // number of wins the player has so far and picks a new word
+    function newGame(){
+        //resetting variables to original value
+        numGuesses = 12;
+        lettersGuessed = [];
+        secretWord = '';
+        wordDisp = [];
+        //resetting display to start screen
+        document.getElementById('blanks').innerHTML = '';
+        document.getElementById('dispLetters').innerHTML = '';
+
+        /* generating a random num to pick our word for this round */
+        var w = Math.floor(Math.random() * words.length);
+        //console.log('random index is: '+w);
+        console.log('secret word is: '+words[w]);
+        console.log('length of secret word is: '+words[w].length)
+        secretWord = words[w];
+        //console.log(secretWord);
 
     // hopefully this will create a unique array ofr wordDisp' depending
     // on the length of the secret word
@@ -49,7 +61,9 @@
         wordDisp.push('__');
     }
     console.log(wordDisp);
-    document.getElementById('blanks').innerHTML = wordDisp;
+    document.getElementById('blanks').innerHTML = wordDisp.join(' ');
+
+    }
 
     // now we begin interacting with a user. below is the code
     // that will run at the start of a game when the user presses
@@ -80,21 +94,36 @@
                     if ((secretWord.indexOf(guess,j)) != -1){
                         wordDisp[secretWord.indexOf(guess,j)] = guess;
                         //console.log(wordDisp);
-                        document.getElementById('blanks').innerHTML = wordDisp;
+                        document.getElementById('blanks').innerHTML = wordDisp.join(' ');
                     }
                 }
             } else {
                 console.log('try again :(');
                 numGuesses--;
-            console.log(numGuesses);
+                console.log('number of guesses left: '+numGuesses);
             }
         } else {
             console.log(lettersGuessed);
             console.log(guess + ' already in array. guess a new letter');
         }
 
+        console.log('hidden word: '+secretWord+" // displayed word: "+wordDisp.join(''));
+        // okay now i need to get the game to stop if the player runs out of guesses
+        if (numGuesses===0){
+            alert('You are out of guesses!');
+            newGame();
+        }
+
+        // OR if the word is guessed correctly!
+        if (wordDisp.join('') == secretWord){
+            alert('you won!');
+            wins++;
+            newGame();
+        }
     }
     console.log(guess);
+
+newGame();
 </script>
 
 </body>
