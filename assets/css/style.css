@@ -1,0 +1,15 @@
+/* 
+this is a list of the different font names/calls so i don't have to keep looking it up on google :))))
+font-family: 'Butcherman', cursive;
+font-family: 'Nosifer', cursive;
+font-family: 'Eater', cursive;
+font-family: 'Creepster', cursive;
+*/
+
+body {
+    width: fit-content;
+    margin: auto;
+    font-family: 'Butcherman', cursive;
+    color: #ffffff;
+    background: url('../images/black_thread.png');
+}

@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Bootstrap liiiiiiiinks -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
+    <link href="https://fonts.googleapis.com/css?family=Butcherman|Creepster|Eater|Nosifer" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
     <title>Word Guess!</title>
 </head>
 <body>
@@ -11,17 +19,21 @@
 
     <header><h1>Welcome to Word Guess!</h1></header>
 
-<h3>Press any key to start</h3>
+<div class="row" id="pressToStart">
+    <div class="col">
+        <h3>Press any key to start</h3>
+    </div>
+</div>
 
-<p>key pressed: <span id="kp"></span></p>
+<!--<p>key pressed: <span id="kp"></span></p>-->
 
-<p>Wins: <span id="w"></span></p>
+<p>Wins: <span id="w">0</span></p>
 
 <p>Unknown word: <span id='blanks'></span></p>
 
 <p>Letters guessed: <span id='dispLetters'></span></p>
 
-<p>Guesses left: </p>
+<p>Guesses left: <span id='g'>12</span></p>
 
 <script>
     /* variables */
@@ -33,19 +45,26 @@
     var lettersGuessed = [];
     var numGuesses = 12;
 
-    // here is a function that will reset the game. it resets everything except for 
-    // number of wins the player has so far and picks a new word
+    // this is a function that will reset the game. no parameters
+    // function is called if the page is reloaded OR player runs out of guesses 
+    // OR player guesses word correctly 
+    //
+    // newGame resets the screen to a new game. Everything is reset besides the
+    // number of wins player has so far. then it picks a new word for the next 
+    // round
     function newGame(){
         //resetting variables to original value
         numGuesses = 12;
+        //console.log('guesses left: '+numGuesses);
         lettersGuessed = [];
         secretWord = '';
         wordDisp = [];
         //resetting display to start screen
         document.getElementById('blanks').innerHTML = '';
         document.getElementById('dispLetters').innerHTML = '';
+        document.getElementById('g').innerHTML = numGuesses;
 
-        /* generating a random num to pick our word for this round */
+        //generating a random num to pick our word for this round
         var w = Math.floor(Math.random() * words.length);
         //console.log('random index is: '+w);
         console.log('secret word is: '+words[w]);
@@ -53,27 +72,35 @@
         secretWord = words[w];
         //console.log(secretWord);
 
-    // hopefully this will create a unique array ofr wordDisp' depending
+    // creates an array of 'blanks' (underscores) depending
     // on the length of the secret word
-
     for (var i=0; i < secretWord.length; i++){
         //console.log(i);r wordDisp
         wordDisp.push('__');
     }
     console.log(wordDisp);
-    document.getElementById('blanks').innerHTML = wordDisp.join(' ');
 
+    // displays our array
+    document.getElementById('blanks').innerHTML = wordDisp.join(' ');
     }
 
     // now we begin interacting with a user. below is the code
-    // that will run at the start of a game when the user presses
-    // a key
+    // that will run at when the user presses any key
+
+    // this function is really the meat of our game: 
+        // 1 - check if the user has guesed this letter already
+            // if yes, nothing happens
+            // if no, we first add the letter to our array of 
+            // letters guessed. next we change our numGuesses by -1
+        // 2 - check if the letter is in our secret word
+            // if no, guess again
+            // if yes, we need to display those letters on our screen
 
     //saves key pressed to a variable called 'guess'
     document.onkeypress = function(event){
         guess = event.key;
-        document.getElementById('kp').innerHTML = guess;
-        console.log(guess);
+        //document.getElementById('kp').innerHTML = guess;
+        console.log('letterr guessed: '+guess);
 
         // adds element to list of letters guessed (if it has not been guessed already)
         if (!lettersGuessed.includes(guess)){
@@ -88,7 +115,7 @@
             if (secretWord.includes(guess)){
                 console.log(guess + ' is in the word '+ secretWord);
                 
-                
+                // then we need to know each time it occurs in the word
                 for (var j=0; j<secretWord.length; j++){
                     //console.log(secretWord.indexOf(guess,j));
                     if ((secretWord.indexOf(guess,j)) != -1){
@@ -100,6 +127,7 @@
             } else {
                 console.log('try again :(');
                 numGuesses--;
+                document.getElementById('g').innerHTML = numGuesses;
                 console.log('number of guesses left: '+numGuesses);
             }
         } else {
@@ -116,8 +144,10 @@
 
         // OR if the word is guessed correctly!
         if (wordDisp.join('') == secretWord){
+            document.getElementById('blanks').innerHTML = secretWord; 
             alert('you won!');
             wins++;
+            document.getElementById('w').innerHTML = wins;
             newGame();
         }
     }
