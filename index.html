@@ -15,25 +15,54 @@
     <title>Word Guess!</title>
 </head>
 <body>
-    
 
     <header><h1>Welcome to Word Guess!</h1></header>
+<!-- this is the screen that will appear when the user CORRECTLY guesses the word -->
+<div id="overlay">
+    <h3 id="youWinTxt">You win this time!</h3>
+    <img src="assets/images/scaryGhost.jpg" id="youWinImg">
+    <audio id="scream"><source src="assets/Scary Scream-SoundBible.com-1115384336.mp3"></audio>
+</div>
 
-<div class="row" id="pressToStart">
+<!-- and this is the screen that will be displayed when theyre a LOSER -->
+<div id="loseOver">
+    <h3 id="youLoseTxt">Better luck next time! <br>
+    The word was: <span id="wordIfLost"></span></h3>
+    <img src="assets/images/scaryDoor.jpg" id="youLoseImg">
+    <audio id="door"><source src="assets/Creaking Door Spooky-SoundBible.com-1909842345.mp3"></audio>
+</div>
+
+<div class="row" id="pressToStart" style="text-align: center">
     <div class="col">
-        <h3>Press any key to start</h3>
+       <span id="pressKey"><h6>Press any key to start</h6></span>
     </div>
 </div>
 
 <!--<p>key pressed: <span id="kp"></span></p>-->
 
-<p>Wins: <span id="w">0</span></p>
+<!--<div class="row" id="rWord">-->
+<div class="row" id="rLettersAndGuesses">
+    <div class="col-sm-3" id="cLettersGuessed">
+        <p>Letters guessed: <br><br><span id='dispLetters'></span></p>
+    </div>
+    <div class="col" id="cWord" style="text-align:center">
+        <p><span id='blanks'></span></p>
+    </div>
+    <div class="col-sm-3" id="cGuessesLeft">
+        <p>Guesses left: <br><br><span id='g'>12</span></p>
+    </div>
+</div>
 
-<p>Unknown word: <span id='blanks'></span></p>
+<br><br><br>
 
-<p>Letters guessed: <span id='dispLetters'></span></p>
-
-<p>Guesses left: <span id='g'>12</span></p>
+<div class="row" id="rStats">
+    <div class="col-sm-6" id="cGamesPlayed">
+        <p>Games Played: <br><br><span id="spGamesPlayed">0</span></p>
+    </div>
+    <div class="col-sm-6" id="cWins">
+        <p>Wins: <br><br><span id="w">0</span></p>
+    </div>
+</div>
 
 <script>
     /* variables */
@@ -44,6 +73,7 @@
     var wordDisp = [];
     var lettersGuessed = [];
     var numGuesses = 12;
+    var gamesPlayed = 0;
 
     // this is a function that will reset the game. no parameters
     // function is called if the page is reloaded OR player runs out of guesses 
@@ -99,59 +129,96 @@
     //saves key pressed to a variable called 'guess'
     document.onkeypress = function(event){
         guess = event.key;
+        // i want the press to start instructions to disappear once key pressed
+        document.getElementById('pressKey').style.visibility = "hidden";
         //document.getElementById('kp').innerHTML = guess;
         console.log('letterr guessed: '+guess);
 
-        // adds element to list of letters guessed (if it has not been guessed already)
-        if (!lettersGuessed.includes(guess)){
-            //console.log(lettersGuessed);
-            //console.log(guess + ' not already in array. adding now');
-            lettersGuessed.push(guess);
-            console.log(lettersGuessed);
-            document.getElementById('dispLetters').innerHTML = lettersGuessed;
+        // condition that user must enter only alphabet
+        if (((event.keyCode) > 64 && (event.keyCode) < 91) || ((event.keyCode) > 96 && (event.keyCode) < 123)){
 
-            // if the user has not guessed the letter yet then we need to check 
-            // if its in our secret word
-            if (secretWord.includes(guess)){
-                console.log(guess + ' is in the word '+ secretWord);
-                
-                // then we need to know each time it occurs in the word
-                for (var j=0; j<secretWord.length; j++){
-                    //console.log(secretWord.indexOf(guess,j));
-                    if ((secretWord.indexOf(guess,j)) != -1){
-                        wordDisp[secretWord.indexOf(guess,j)] = guess;
-                        //console.log(wordDisp);
-                        document.getElementById('blanks').innerHTML = wordDisp.join(' ');
+            // adds element to list of letters guessed (if it has not been guessed already)
+            if (!lettersGuessed.includes(guess)){
+                //console.log(lettersGuessed);
+                //console.log(guess + ' not already in array. adding now');
+                lettersGuessed.push(guess);
+                console.log(lettersGuessed);
+                document.getElementById('dispLetters').innerHTML = lettersGuessed;
+
+                // if the user has not guessed the letter yet then we need to check 
+                // if its in our secret word
+                if (secretWord.includes(guess)){
+                    console.log(guess + ' is in the word '+ secretWord);
+                    
+                    // then we need to know each time it occurs in the word
+                    for (var j=0; j<secretWord.length; j++){
+                        //console.log(secretWord.indexOf(guess,j));
+                        if ((secretWord.indexOf(guess,j)) != -1){
+                            wordDisp[secretWord.indexOf(guess,j)] = guess;
+                            //console.log(wordDisp);
+                            document.getElementById('blanks').innerHTML = wordDisp.join(' ');
+                        }
                     }
+                } else {
+                    console.log('try again :(');
+                    numGuesses--;
+                    document.getElementById('g').innerHTML = numGuesses;
+                    if (numGuesses <=3 ){
+                        document.getElementById('g').innerHTML.fontcolor("red");
+                        console.log('hey there buddy running a lil low on guesses dont ya think?');
+                    }
+
+                    console.log('number of guesses left: '+numGuesses);
                 }
             } else {
-                console.log('try again :(');
-                numGuesses--;
-                document.getElementById('g').innerHTML = numGuesses;
-                console.log('number of guesses left: '+numGuesses);
+                console.log(lettersGuessed);
+                console.log(guess + ' already in array. guess a new letter');
             }
-        } else {
-            console.log(lettersGuessed);
-            console.log(guess + ' already in array. guess a new letter');
         }
 
-        console.log('hidden word: '+secretWord+" // displayed word: "+wordDisp.join(''));
-        // okay now i need to get the game to stop if the player runs out of guesses
-        if (numGuesses===0){
-            alert('You are out of guesses!');
-            newGame();
+            console.log('hidden word: '+secretWord+" // displayed word: "+wordDisp.join(''));
+            // okay now i need to get the game to stop if the player runs out of guesses
+            if (numGuesses===0){
+                // alert('You are out of guesses! The word was '+secretWord);
+                displayScaryDoor();
+                document.getElementById('wordIfLost').innerHTML = secretWord;
+                gamesPlayed++;
+                document.getElementById('spGamesPlayed').innerHTML = gamesPlayed;
+                newGame();
+            }
+
+            // OR if the word is guessed correctly!
+            if (wordDisp.join('') == secretWord){
+                //document.getElementById('blanks').innerHTML = secretWord; 
+                //alert('you won!');
+                displayScaryScreen();
+                wins++;
+                gamesPlayed++;
+                document.getElementById('w').innerHTML = wins;
+                document.getElementById('spGamesPlayed').innerHTML = gamesPlayed;
+                newGame();
+            }
+        }
+        console.log(guess);
+
+        // this function is to display the overlay once a user correctly guesses the word
+        // we want to display the overlay for a couple seconds then have it disappear so
+        // the next game can begin
+        function displayScaryScreen(){
+            document.getElementById('overlay').style.display = "block";
+            document.getElementById("scream").play();
+            setTimeout(function(){
+                document.getElementById("overlay").style.display = "none";
+            }, 4000);
         }
 
-        // OR if the word is guessed correctly!
-        if (wordDisp.join('') == secretWord){
-            document.getElementById('blanks').innerHTML = secretWord; 
-            alert('you won!');
-            wins++;
-            document.getElementById('w').innerHTML = wins;
-            newGame();
+        function displayScaryDoor(){
+            document.getElementById("loseOver").style.display = "block";
+            document.getElementById("door").play();
+            setTimeout(function(){
+                document.getElementById("loseOver").style.display = "none";
+            }, 4000);
         }
-    }
-    console.log(guess);
 
 newGame();
 </script>
